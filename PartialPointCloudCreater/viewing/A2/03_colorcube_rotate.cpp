@@ -377,10 +377,10 @@ void renderGL(void){
     modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix * inverse(wcs_to_vcs_matrix);
   }
   else if (state==6){
-    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* inverse(ndcs_to_dcs_matrix) * inverse(vcs_to_ccs_matrix) *inverse(wcs_to_vcs_matrix) * modelview_matrix;
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix * inverse(wcs_to_vcs_matrix) *inverse(vcs_to_ccs_matrix) * modelview_matrix;
   }
   else if (state==7){
-    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* inverse(wcs_to_vcs_matrix) *inverse(vcs_to_ccs_matrix) * inverse(ndcs_to_dcs_matrix) * modelview_matrix;
   }
   else if (state==8){
     modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;

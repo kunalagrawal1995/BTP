@@ -72,7 +72,7 @@ namespace csX75
     else if (key == GLFW_KEY_PAGE_UP)
       zrot += 0.1;
     else if (key == GLFW_KEY_PAGE_DOWN)
-      zrot -= 1.0;
+      zrot -= 0.1;
     else if(key == GLFW_KEY_A)
       trans[0] += 0.1;
     else if(key == GLFW_KEY_D)
