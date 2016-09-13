@@ -1,0 +1,6 @@
+Demo/PCL_Conv_Sid_Reg/*.pts
+Demo/PCL_Conv_Sid_Reg/*.ply
+Demo/PCL_Conv_Sid_Reg/*.asc
+Demo/PCL_Register/build/*.pcd
+Demo/PCL_Register/build/*.pts
+Demo/PCL_Register/build/*.ply
