@@ -1,5 +1,5 @@
 /*
-  CSX75 Tutorial 3
+  BTP
 
   A program which opens a window and draws the "color cube."
 
@@ -16,7 +16,7 @@
 */
 
 
-#include "03_colorcube_rotate.hpp"
+#include "partial_pointcloud.hpp"
 
 GLuint shaderProgram;
 GLuint vbo[4],vao[4];
@@ -49,14 +49,14 @@ void load(std::string model, std::vector<glm::vec4> &model_positions, std::vecto
     model_colors.clear();
     float inp_x,inp_y,inp_z,inp_r,inp_g,inp_b;
     glm::vec4 inp_pos,inp_color;
-    while(file_obj>>inp_x>>inp_y>>inp_z>>inp_r>>inp_g>>inp_b){
+    while(file_obj>>inp_x>>inp_y>>inp_z){
       inp_pos[0] = inp_x;
       inp_pos[1] = inp_y;
       inp_pos[2] = inp_z;
       inp_pos[3] = 1.0f;
-      inp_color[0] = inp_r;
-      inp_color[1] = inp_g;
-      inp_color[2] = inp_b;
+      inp_color[0] = 0.0;
+      inp_color[1] = 1.0;
+      inp_color[2] = 0.0;
       inp_color[3] = 1.0f;
       model_positions.push_back(inp_pos);
       model_colors.push_back(inp_color);
@@ -260,10 +260,10 @@ void initBuffersGL(void)
   std::string fragment_shader_file("03_fshader.glsl");
 
   std::vector<GLuint> shaderList;
-  shaderList.push_back(csX75::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
-  shaderList.push_back(csX75::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
+  shaderList.push_back(btp::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
+  shaderList.push_back(btp::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
 
-  shaderProgram = csX75::CreateProgramGL(shaderList);
+  shaderProgram = btp::CreateProgramGL(shaderList);
   glUseProgram( shaderProgram );
 
   GLuint vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
@@ -476,7 +476,7 @@ int main(int argc, char** argv)
   GLFWwindow* window;
 
   //! Setting up the GLFW Error callback
-  glfwSetErrorCallback(csX75::error_callback);
+  glfwSetErrorCallback(btp::error_callback);
 
   //! Initialize GLFW
   if (!glfwInit())
@@ -491,7 +491,7 @@ int main(int argc, char** argv)
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
   //! Create a windowed mode window and its OpenGL context
-  window = glfwCreateWindow(512, 512, "CS475/CS675 Tutorial 3: Rotating  Colorcube", NULL, NULL);
+  window = glfwCreateWindow(512, 512, "BTP: Point Cloud", NULL, NULL);
   if (!window)
     {
       glfwTerminate();
@@ -518,15 +518,15 @@ int main(int argc, char** argv)
   std::cout<<"GLSL Version: "<<glGetString (GL_SHADING_LANGUAGE_VERSION)<<std::endl;
 
   //Keyboard Callback
-  glfwSetKeyCallback(window, csX75::key_callback);
+  glfwSetKeyCallback(window, btp::key_callback);
   //Framebuffer resize callback
-  glfwSetFramebufferSizeCallback(window, csX75::framebuffer_size_callback);
+  glfwSetFramebufferSizeCallback(window, btp::framebuffer_size_callback);
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
   //Initialize GL state
-  csX75::initGL();
+  btp::initGL();
   initBuffersGL();
 
   // Loop until the user closes the window

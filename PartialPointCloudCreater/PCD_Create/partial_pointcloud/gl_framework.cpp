@@ -6,7 +6,7 @@ extern glm::vec3 trans;
 extern GLint state;
 extern void save_file();
 
-namespace csX75
+namespace btp
 {
   //! Initialize GL State
   void initGL(void)

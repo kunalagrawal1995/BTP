@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include "shader_util.hpp"
 
-namespace csX75
+namespace btp
 {
   GLuint LoadShaderGL(GLenum eShaderType, const std::string &strFilename)
   {
