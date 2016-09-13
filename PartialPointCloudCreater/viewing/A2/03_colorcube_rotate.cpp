@@ -180,10 +180,33 @@ void load_frustum(){
   N=-N;F=-F;
 }
 
-void save_file(){
-	std::ofstream scene_saver;
+void save_file()
+{
+  std::ofstream scene_saver;
   scene_saver.open("scene.pts", std::ios::out);
-  scene_saver<<"kunal"<<std::endl;
+  // std::cout <<"kunal"<<std::endl;
+  int WINSIZE = 512;
+  float depth;
+  float x,y,z,r,g,b;
+  for (int i = 0; i < WINSIZE; ++i)
+  {
+    for (int j = 0; j < WINSIZE; ++j)
+    {
+      glReadPixels(i,j,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&depth);
+      x = (i-256)/128.0;
+      y = (j-256)/128.0;
+      z = 4.0*(depth-0.5);
+      if(depth == 1){
+        continue;
+      }
+      else{
+        r = 0.0; g = 0.0; b = 1.0;
+        scene_saver<<x<<" "<<y<<" "<<z<<" "<<r<<" "<<g<<" "<<b<<std::endl;
+      }
+    }
+  }
+  std::cout<<"done. depth values calculated."<<std::endl;
+
   scene_saver.close();
 
 }
@@ -199,18 +222,6 @@ void initBuffersGL(void)
     scene_loader>>scale1[0]>>scale1[1]>>scale1[2];
     scene_loader>>xrot1>>yrot1>>zrot1;
     scene_loader>>trans1[0]>>trans1[1]>>trans1[2];
-
-    // scene_loader>>model2;
-    // load(model2,model2_positions,model2_colors);
-    // scene_loader>>scale2[0]>>scale2[1]>>scale2[2];
-    // scene_loader>>xrot2>>yrot2>>zrot2;
-    // scene_loader>>trans2[0]>>trans2[1]>>trans2[2];
-
-    // scene_loader>>model3;
-    // load(model3,model3_positions,model3_colors);
-    // scene_loader>>scale3[0]>>scale3[1]>>scale3[2];
-    // scene_loader>>xrot3>>yrot3>>zrot3;
-    // scene_loader>>trans3[0]>>trans3[1]>>trans3[2];
 
     scene_loader>>eye[0]>>eye[1]>>eye[2];
     scene_loader>>lookAt[0]>>lookAt[1]>>lookAt[2];
@@ -360,6 +371,18 @@ void renderGL(void){
     modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix *vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
   }
   else if (state==4){
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
+  }
+  else if (state==5){
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix * inverse(wcs_to_vcs_matrix);
+  }
+  else if (state==6){
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* inverse(ndcs_to_dcs_matrix) * inverse(vcs_to_ccs_matrix) *inverse(wcs_to_vcs_matrix) * modelview_matrix;
+  }
+  else if (state==7){
+    modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
+  }
+  else if (state==8){
     modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
   }
   glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));

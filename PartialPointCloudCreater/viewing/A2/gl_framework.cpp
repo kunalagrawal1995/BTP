@@ -4,6 +4,7 @@
 extern GLfloat xrot,yrot,zrot;
 extern glm::vec3 trans;
 extern GLint state;
+extern void save_file();
 
 namespace csX75
 {
@@ -41,46 +42,52 @@ namespace csX75
       glfwSetWindowShouldClose(window, GL_TRUE);
     else if (key == GLFW_KEY_0 && action == GLFW_PRESS)
       state = 0;
-  else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-      state = 1;
-  
-  else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-      state = 2;
-  
-  else if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-      state = 3;
-  
-  else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-      state = 4;
-  
-  else if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-    yrot -= 1.0;
-  else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-    yrot += 1.0;
-  else if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-    xrot += 1.0;
-  else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-    xrot -= 1.0;
-  else if (key == GLFW_KEY_PAGE_UP && action == GLFW_PRESS)
-    zrot += 1.0;
-  else if (key == GLFW_KEY_PAGE_DOWN && action == GLFW_PRESS)
-    zrot -= 1.0;
-  else if(key == GLFW_KEY_A && action == GLFW_PRESS)
-    trans[0] += 0.1;
-  else if(key == GLFW_KEY_D && action == GLFW_PRESS)
-    trans[0] -= 0.1;
-  else if(key == GLFW_KEY_W && action == GLFW_PRESS)
-    trans[1] += 0.1;
-  else if(key == GLFW_KEY_S && action == GLFW_PRESS)
-    trans[1] -= 0.1;
-  else if(key == GLFW_KEY_Z && action == GLFW_PRESS)
-    trans[2] += 0.1;
-  else if(key == GLFW_KEY_X && action == GLFW_PRESS)
-    trans[2] -= 0.1;
-  else if(key == GLFW_KEY_P && action == GLFW_PRESS)
-    save_file();
-      
-}
+    else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+        state = 1;
+    
+    else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+        state = 2;
+    
+    else if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+        state = 3;
+    
+    else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+        state = 4;
+    else if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+        state = 5;
+    else if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+        state = 6;
+    else if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+        state = 7;
+    else if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+        state = 8;
+    else if (key == GLFW_KEY_LEFT)
+      yrot -= 0.1;
+    else if (key == GLFW_KEY_RIGHT)
+      yrot += 0.1;
+    else if (key == GLFW_KEY_UP)
+      xrot += 0.1;
+    else if (key == GLFW_KEY_DOWN)
+      xrot -= 0.1;
+    else if (key == GLFW_KEY_PAGE_UP)
+      zrot += 0.1;
+    else if (key == GLFW_KEY_PAGE_DOWN)
+      zrot -= 1.0;
+    else if(key == GLFW_KEY_A)
+      trans[0] += 0.1;
+    else if(key == GLFW_KEY_D)
+      trans[0] -= 0.1;
+    else if(key == GLFW_KEY_W)
+      trans[1] += 0.1;
+    else if(key == GLFW_KEY_S)
+      trans[1] -= 0.1;
+    else if(key == GLFW_KEY_Z)
+      trans[2] += 0.1;
+    else if(key == GLFW_KEY_X)
+      trans[2] -= 0.1;
+    else if(key == GLFW_KEY_P && action == GLFW_PRESS)
+      save_file();
+  }
 };  
   
 
