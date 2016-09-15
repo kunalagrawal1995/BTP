@@ -25,6 +25,7 @@ glm::mat4 global_translation_matrix;
 glm::mat4 global_rotation_matrix;
 glm::mat4 rotation_matrix;
 glm::mat4 ortho_matrix;
+glm::mat4 projection_matrix;
 glm::mat4 translation_matrix;
 glm::mat4 scaling_matrix;
 glm::mat4 modelview_matrix;
@@ -289,8 +290,8 @@ void initBuffersGL(void)
   glBufferSubData( GL_ARRAY_BUFFER, model1_positions.size()*sizeof(glm::vec4),model1_colors.size()*sizeof(glm::vec4), &model1_colors[0]);
  
   glEnableVertexAttribArray( vPosition );
- //  glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_ALWAYS);
+  glEnable(GL_CULL_FACE);
+	glDepthFunc(GL_LEQUAL);
   glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
   
   glEnableVertexAttribArray( vColor );
@@ -360,8 +361,7 @@ void renderGL(void){
   ortho_matrix = glm::ortho(-2.0,2.0,-2.0,2.0,-2.0,2.0);
 
 
-
-  modelview_matrix =  translation_matrix * scaling_matrix * rotation_matrix;
+  modelview_matrix =  translation_matrix * rotation_matrix * scaling_matrix;
   if (state==0){
       modelview_matrix = ortho_matrix *global_translation_matrix * global_rotation_matrix *modelview_matrix;}
   else if(state ==1){
