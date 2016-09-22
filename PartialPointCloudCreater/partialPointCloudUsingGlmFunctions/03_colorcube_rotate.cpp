@@ -19,6 +19,7 @@ glm::mat4 model_rotation_matrix;
 glm::mat4 ortho_matrix;
 glm::mat4 perspective_matrix;
 glm::mat4 modelview_matrix;
+glm::mat4 model_matrix;
 glm::mat4 wcs_to_vcs_matrix;
 glm::mat4 vcs_to_ccs_matrix;
 glm::mat4 ccs_to_ndcs_matrix;
@@ -202,16 +203,27 @@ void renderGL(void){
 
 	wcs_to_vcs_matrix = glm::lookAt(glm::vec3(model_rotation_matrix*glm::vec4(eye,1.0)), lookAt, glm::vec3(model_rotation_matrix*glm::vec4(up,1.0)));
 
-	modelview_matrix = model_translation_matrix * model_rotation_matrix * model_scaling_matrix;
+	GLfloat matrix_view[16];
+	glGetFloatv (GL_MODELVIEW_MATRIX, matrix_view);
+	glm::mat4 matrix_view4 = glm::make_mat4(matrix_view);
+
+	GLfloat matrix_pro[16];
+	glGetFloatv (GL_PROJECTION_MATRIX, matrix_pro);
+	glm::mat4 matrix_pro4 = glm::make_mat4(matrix_pro);
+
+	model_matrix = model_translation_matrix * model_rotation_matrix * model_scaling_matrix;
 	if (state==0){
-		modelview_matrix = perspective_matrix * modelview_matrix;
+		modelview_matrix = model_matrix;
 	}
-	else if(state == 1){
-		modelview_matrix = perspective_matrix * wcs_to_vcs_matrix * modelview_matrix;
+	else if (state==1){
+		modelview_matrix = matrix_pro4 * matrix_view4 * model_matrix;
 	}
-	// else if(state ==1){
-	// 	modelview_matrix = ortho_matrix *global_translation_matrix * global_rotation_matrix * wcs_to_vcs_matrix * modelview_matrix;
-	// }
+	else if(state == 2){
+		modelview_matrix = inverse(matrix_view4) * inverse(matrix_pro4);
+	}
+	else if(state == 3){
+		modelview_matrix = inverse(model_matrix) * inverse(matrix_view4) * inverse(matrix_pro4);
+	}
 	// else if (state==2 || state == 3){
 	// 	modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix *vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
 	// }

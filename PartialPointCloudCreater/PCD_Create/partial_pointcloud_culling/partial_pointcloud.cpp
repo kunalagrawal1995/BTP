@@ -49,7 +49,7 @@ void load(std::string model, std::vector<glm::vec4> &model_positions, std::vecto
     model_colors.clear();
     float inp_x,inp_y,inp_z,inp_r,inp_g,inp_b;
     glm::vec4 inp_pos,inp_color;
-    while(file_obj>>inp_x>>inp_y>>inp_z){
+    while(file_obj>>inp_x>>inp_y>>inp_z>>inp_r>>inp_g>>inp_b){
       inp_pos[0] = inp_x;
       inp_pos[1] = inp_y;
       inp_pos[2] = inp_z;
