@@ -1,4 +1,4 @@
-#include "03_colorcube_rotate.hpp"
+#include "render_mesh.hpp"
 
 GLuint shaderProgram;
 GLuint vbo,vao;
@@ -18,12 +18,9 @@ glm::mat4 model_rotation_matrix;
 
 glm::mat4 ortho_matrix;
 glm::mat4 perspective_matrix;
-glm::mat4 modelview_matrix;
+glm::mat4 final_matrix;
 glm::mat4 model_matrix;
-glm::mat4 wcs_to_vcs_matrix;
-glm::mat4 vcs_to_ccs_matrix;
-glm::mat4 ccs_to_ndcs_matrix;
-glm::mat4 ndcs_to_dcs_matrix;
+glm::mat4 view_matrix;
 
 std::vector<glm::vec4> v_triangle_positions;
 std::vector<glm::vec4> v_triangle_colors;
@@ -68,12 +65,12 @@ void load(std::string model, std::vector<glm::vec4> &model_positions, std::vecto
 			else if(type == 'f')
 			{
 				file_obj>>inpi_x>>inpi_y>>inpi_z;
-				model_positions.push_back(v_triangle_positions[inpi_x]);
-				model_positions.push_back(v_triangle_positions[inpi_y]);
-				model_positions.push_back(v_triangle_positions[inpi_z]);
-				model_colors.push_back(v_triangle_colors[inpi_x]);
-				model_colors.push_back(v_triangle_colors[inpi_y]);
-				model_colors.push_back(v_triangle_colors[inpi_z]);
+				model_positions.push_back(v_triangle_positions[inpi_x-1]);
+				model_positions.push_back(v_triangle_positions[inpi_y-1]);
+				model_positions.push_back(v_triangle_positions[inpi_z-1]);
+				model_colors.push_back(v_triangle_colors[inpi_x-1]);
+				model_colors.push_back(v_triangle_colors[inpi_y-1]);
+				model_colors.push_back(v_triangle_colors[inpi_z-1]);
 			}
 			
 		}
@@ -90,7 +87,7 @@ void save_file()
 {
 	std::ofstream scene_saver;
 	scene_saver.open("scene.pts", std::ios::out);
-	std::cout <<"kunal"<<std::endl;
+	// std::cout <<"kunal"<<std::endl;
 	int WINSIZE = 512;
 	float depth;
 	float x,y,z,r,g,b;
@@ -107,7 +104,8 @@ void save_file()
 			}
 			else{
 				r = 0.0; g = 0.0; b = 1.0;
-				scene_saver<<x<<" "<<y<<" "<<z<<" "<<r<<" "<<g<<" "<<b<<std::endl;
+				glm::vec4 p = inverse(view_matrix) * inverse(perspective_matrix) * glm::vec4(x,y,z,1.0);
+				scene_saver<<p[0] <<" "<<p[1]<<" "<<p[2]<<" "<<r<<" "<<g<<" "<<b<<std::endl;
 			}
 		}
 	}
@@ -137,31 +135,6 @@ void initBuffersGL(void)
 		N=N; F=F;
 
 		L=-L;B=-B;
-
-		wcs_to_vcs_matrix = glm::lookAt(eye, lookAt, up);
-		ortho_matrix = glm::ortho(-2.0,2.0,-2.0,2.0,-2.0,20.0);
-		perspective_matrix = glm::perspective(glm::radians(90.0), 1.0, 0.1, 20.0);
-
-
-		// vcs_to_ccs_matrix[0] = glm::vec4(2*N/(R-L), 0.0f, 0.0f, 0.0f);
-		// vcs_to_ccs_matrix[1] = glm::vec4(0.0f, 2*N/(T-B), 0.0f, 0.0f);
-		// vcs_to_ccs_matrix[2] = glm::vec4((R+L)/(R-L), (T+B)/(T-B), -(F+N)/(F-N), -1.0f);
-		// vcs_to_ccs_matrix[3] = glm::vec4(0.0f, 0.0f, -2*F*N/(F-N), 0.0f);
-
-		// glm::mat4 dcs1;
-		// dcs1[0] = glm::vec4((Rw-Lw)/2, 0.0f,0.0f,0.0f);
-		// dcs1[1] = glm::vec4(0.0f, (Tw-Bw)/2,0.0f,0.0f);
-		// dcs1[2] = glm::vec4(0.0f, 0.0f,0.5f,0.0f);
-		// dcs1[3] = glm::vec4(0.0f, 0.0f,0.0f,1.0f);
-
-		// glm::mat4 dcs2;
-		// dcs2[0] = glm::vec4(1.0f, 0.0f,0.0f,0.0f);
-		// dcs2[1] = glm::vec4(0.0f, 1.0f,0.0f,0.0f);
-		// dcs2[2] = glm::vec4(0.0f, 0.0f,1.0f,0.0f);
-		// dcs2[3] = glm::vec4((Rw+Lw)/2, (Tw+Bw)/2,0.5f,1.0f);
-
-		// ndcs_to_dcs_matrix = dcs2*dcs1;
-
 	}
 	else {
 		std::cout<< "could not find file myscene.scn"<<std::endl;
@@ -210,12 +183,25 @@ void initBuffersGL(void)
 }
 
 void renderGL(void){
+	// glMatrixMode(GL_PROJECTION);
+	// glLoadIdentity();
+	// gluPerspective(60.0,1.0,2.5,-5);
+
+	// glMatrixMode(GL_MODELVIEW);
+	// glLoadIdentity();
+	// glPushMatrix();
+		// glScalef(model_xscale,model_yscale,model_zscale);
+		// glRotatef(glm::degrees(model_xrot),1,0,0);
+		// glRotatef(glm::degrees(model_yrot),0,1,0);
+		// glRotatef(glm::degrees(model_zrot),0,0,1);
+		// glTranslatef(model_xtrans,model_ytrans,model_ztrans);
+		// gluLookAt(eye[0],eye[1],eye[2],lookAt[0],lookAt[1],lookAt[2],up[0],up[1],up[2]);
 	//set up global transformations set by control keys
-	global_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xtrans, ytrans, ztrans));
-	global_rotation_matrix_x = glm::rotate(glm::mat4(1.0f), xrot, glm::vec3(1.0f,0.0f,0.0f));
-	global_rotation_matrix_y = glm::rotate(glm::mat4(1.0f), yrot, glm::vec3(0.0f,1.0f,0.0f));
-	global_rotation_matrix_z = glm::rotate(glm::mat4(1.0f), zrot, glm::vec3(0.0f,0.0f,1.0f));
-	global_rotation_matrix = global_rotation_matrix_z * global_rotation_matrix_y * global_rotation_matrix_x;
+	// global_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xtrans, ytrans, ztrans));
+	// global_rotation_matrix_x = glm::rotate(glm::mat4(1.0f), xrot, glm::vec3(1.0f,0.0f,0.0f));
+	// global_rotation_matrix_y = glm::rotate(glm::mat4(1.0f), yrot, glm::vec3(0.0f,1.0f,0.0f));
+	// global_rotation_matrix_z = glm::rotate(glm::mat4(1.0f), zrot, glm::vec3(0.0f,0.0f,1.0f));
+	// global_rotation_matrix = global_rotation_matrix_z * global_rotation_matrix_y * global_rotation_matrix_x;
 
 	//model transformations
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -226,41 +212,30 @@ void renderGL(void){
 	model_rotation_matrix_z = glm::rotate(glm::mat4(1.0f), model_zrot, glm::vec3(0.0f,0.0f,1.0f));
 	model_rotation_matrix = model_rotation_matrix_z * model_rotation_matrix_y * model_rotation_matrix_x;
 
-	wcs_to_vcs_matrix = glm::lookAt(glm::vec3(model_rotation_matrix*glm::vec4(eye,1.0)), lookAt, glm::vec3(model_rotation_matrix*glm::vec4(up,1.0)));
-
+	view_matrix = glm::lookAt(eye, lookAt, up);
+	
 	GLfloat matrix_view[16];
 	glGetFloatv (GL_MODELVIEW_MATRIX, matrix_view);
 	glm::mat4 matrix_view4 = glm::make_mat4(matrix_view);
+	// glPopMatrix();
+	// matrix_view4 = glm::transpose(matrix_view4);
 
 	GLfloat matrix_pro[16];
 	glGetFloatv (GL_PROJECTION_MATRIX, matrix_pro);
 	glm::mat4 matrix_pro4 = glm::make_mat4(matrix_pro);
-
+	// glPopMatrix();
+	// matrix_pro4 = glm::transpose(matrix_pro4);
+	// 
+	perspective_matrix = glm::perspective(glm::radians(90.0), 1.0, 1.0, -5.0);
+	
 	model_matrix = model_translation_matrix * model_rotation_matrix * model_scaling_matrix;
-	if (state==0){
-		modelview_matrix = model_matrix;
-	}
-	else if (state==1){
-		modelview_matrix = matrix_pro4 * matrix_view4 * model_matrix;
-	}
-	else if(state == 2){
-		modelview_matrix = inverse(matrix_view4) * inverse(matrix_pro4);
-	}
-	else if(state == 3){
-		modelview_matrix = inverse(model_matrix) * inverse(matrix_view4) * inverse(matrix_pro4);
-	}
-	// else if (state==2 || state == 3){
-	// 	modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix *vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
-	// }
-	// else if (state==4){
-	// 	modelview_matrix = ortho_matrix * global_translation_matrix * global_rotation_matrix* ndcs_to_dcs_matrix * vcs_to_ccs_matrix *wcs_to_vcs_matrix * modelview_matrix;
-	// }
-	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+	final_matrix = perspective_matrix * view_matrix * model_matrix;
+	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(final_matrix));
 	glUniform1i(state_shader,state);
 
 	glBindVertexArray (vao);
-	// glDrawArrays(GL_TRIANGLES, 0, model_positions.size());
-	glDrawArrays(GL_POINTS, 0, model_positions.size());
+	glDrawArrays(GL_TRIANGLES, 0, model_positions.size());
+	// glDrawArrays(GL_POINTS, 0, model_positions.size());
 }
 
 
@@ -286,7 +261,7 @@ void renderGL(void){
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
 	//! Create a windowed mode window and its OpenGL context
-		window = glfwCreateWindow(512, 512, "CS475/CS675 Tutorial 3: Rotating  Colorcube", NULL, NULL);
+		window = glfwCreateWindow(512, 512, "Render Mesh", NULL, NULL);
 		if (!window)
 		{
 			glfwTerminate();
