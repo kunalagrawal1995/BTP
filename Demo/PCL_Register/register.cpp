@@ -253,7 +253,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   reg.setTransformationEpsilon (1e-6);
   // Set the maximum distance between two correspondences (src<->tgt) to 10cm
   // Note: adjust this based on the size of your datasets
-  reg.setMaxCorrespondenceDistance (0.1);  
+  reg.setMaxCorrespondenceDistance (1.0);  
   // Set the point representation
   reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
 
@@ -285,7 +285,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
 		//is smaller than the threshold, refine the process by reducing
 		//the maximal correspondence distance
     if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
-      reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
+      reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.01);
     
     prev = reg.getLastIncrementalTransformation ();
 

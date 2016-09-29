@@ -28,7 +28,7 @@
 
 
 //State control
-GLint state = 0;
+GLint state = 0;	// 0 for perspective, 1 for ortho view
 
 // Global Rotation Parameters
 GLfloat xrot=0.0,yrot=0.0,zrot=0.0;

@@ -45,18 +45,9 @@ namespace csX75
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
       glfwSetWindowShouldClose(window, GL_TRUE);
     else if (key == GLFW_KEY_0 && action == GLFW_PRESS)
-      state = 0;
+      state = 0;  // default perspective view
   else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-      state = 1;
-  
-  else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-      state = 2;
-  
-  else if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-      state = 3;
-  
-  else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-      state = 4;
+      state = 1;  //ortho view
   
   else if (key == GLFW_KEY_LEFT)
     model_yrot -= 0.1;

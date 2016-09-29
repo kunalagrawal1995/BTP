@@ -86,7 +86,7 @@ void load(std::string model, std::vector<glm::vec4> &model_positions, std::vecto
 void save_file()
 {
 	std::ofstream scene_saver;
-	scene_saver.open("scene.pts", std::ios::out);
+	scene_saver.open("scans/pts/test_scan_000_now.xyz", std::ios::out);
 	// std::cout <<"kunal"<<std::endl;
 	int WINSIZE = 512;
 	float depth;
@@ -96,16 +96,21 @@ void save_file()
 		for (int j = 0; j < WINSIZE; ++j)
 		{
 			glReadPixels(i,j,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&depth);
-			x = (i-256)/128.0;
-			y = (j-256)/128.0;
-			z = 4.0*(depth-0.5);
+			x = (i-256)/256.0;
+			y = (j-256)/256.0;
+			z = 2.0*(depth-0.5);
 			if(depth == 1){
 				continue;
 			}
 			else{
 				r = 0.0; g = 0.0; b = 1.0;
-				glm::vec4 p = inverse(view_matrix) * inverse(perspective_matrix) * glm::vec4(x,y,z,1.0);
-				scene_saver<<p[0] <<" "<<p[1]<<" "<<p[2]<<" "<<r<<" "<<g<<" "<<b<<std::endl;
+				glm::vec4 p;
+				if (state == 0)
+					p = inverse(view_matrix) * inverse(perspective_matrix) * glm::vec4(x,y,z,1.0);
+				else if (state == 1)
+					p = inverse(view_matrix) * inverse(ortho_matrix) * glm::vec4(x,y,z,1.0);
+				// scene_saver<<p[0] <<" "<<p[1]<<" "<<p[2]<<" "<<r<<" "<<g<<" "<<b<<std::endl;
+				scene_saver<<p[0]/p[3] <<" "<<p[1]/p[3]<<" "<<p[2]/p[3]<<std::endl;
 			}
 		}
 	}
@@ -227,9 +232,14 @@ void renderGL(void){
 	// matrix_pro4 = glm::transpose(matrix_pro4);
 	// 
 	perspective_matrix = glm::perspective(glm::radians(90.0), 1.0, 1.0, -5.0);
+	ortho_matrix = glm::ortho(-2.0,2.0,-2.0,2.0,-2.0,2.0);
 	
 	model_matrix = model_translation_matrix * model_rotation_matrix * model_scaling_matrix;
-	final_matrix = perspective_matrix * view_matrix * model_matrix;
+	if (state == 0)
+		final_matrix = perspective_matrix * view_matrix * model_matrix;
+	else if (state == 1)
+		final_matrix = ortho_matrix * view_matrix * model_matrix;
+
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(final_matrix));
 	glUniform1i(state_shader,state);
 
