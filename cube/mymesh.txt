@@ -1,0 +1,4 @@
+/home/dibyendu/Qt/Examples/Qt-5.7/opengl/cube/scans/obj/test_scan_000.obj
+1.0 1.0 1.0
+0.0 0.0 0.0
+-0.3 0.2 0.0

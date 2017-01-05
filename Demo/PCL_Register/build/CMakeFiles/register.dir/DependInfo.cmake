@@ -1,17 +1,23 @@
 # The set of languages for which implicit dependencies are needed:
-SET(CMAKE_DEPENDS_LANGUAGES
+set(CMAKE_DEPENDS_LANGUAGES
   "CXX"
   )
 # The set of files for implicit dependencies of each language:
-SET(CMAKE_DEPENDS_CHECK_CXX
-  "/home/kunala/Documents/BTP/Graphics-BTP/Demo/PCL_Register/register.cpp" "/home/kunala/Documents/BTP/Graphics-BTP/Demo/PCL_Register/build/CMakeFiles/register.dir/register.cpp.o"
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/dibyendu/Desktop/Sem 7/BTP/Graphics-BTP/Demo/PCL_Register/register.cpp" "/home/dibyendu/Desktop/Sem 7/BTP/Graphics-BTP/Demo/PCL_Register/build/CMakeFiles/register.dir/register.cpp.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
-SET(CMAKE_TARGET_DEFINITIONS
+set(CMAKE_TARGET_DEFINITIONS
+  "DISABLE_DAVIDSDK"
+  "DISABLE_DSSDK"
+  "DISABLE_ENSENSO"
+  "DISABLE_LIBUSB_1_0"
+  "DISABLE_OPENNI2"
   "DISABLE_PCAP"
   "DISABLE_PNG"
+  "DISABLE_RSSDK"
   "EIGEN_USE_NEW_STDVECTOR"
   "EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET"
   "FLANN_STATIC"
@@ -19,17 +25,16 @@ SET(CMAKE_TARGET_DEFINITIONS
   )
 
 # Targets to which this target links.
-SET(CMAKE_TARGET_LINKED_INFO_FILES
+set(CMAKE_TARGET_LINKED_INFO_FILES
   )
 
 # The include file search paths:
-SET(CMAKE_C_TARGET_INCLUDE_PATH
+set(CMAKE_C_TARGET_INCLUDE_PATH
   "/usr/include/vtk-5.8"
-  "/usr/local/include/pcl-1.7"
+  "/usr/local/include/pcl-1.8"
   "/usr/include/eigen3"
   "/usr/include/ni"
-  "/usr/include/openni2"
   )
-SET(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
-SET(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
-SET(CMAKE_ASM_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+set(CMAKE_CXX_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+set(CMAKE_Fortran_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})
+set(CMAKE_ASM_TARGET_INCLUDE_PATH ${CMAKE_C_TARGET_INCLUDE_PATH})

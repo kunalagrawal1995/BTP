@@ -53,8 +53,8 @@ Camera global_cam;
 GLfloat L=0.0,R=0.0,T=0.0,B=0.0,N=0.0,F=0.0;
 
 //model positions
-std::vector<glm::vec4> model_positions;
-std::vector<glm::vec4> model_colors;
+std::vector<glm::vec4> model_positions[5];
+std::vector<glm::vec4> model_colors[5];
 
 // frustum positions
 std::vector<glm::vec4> frustum_positions;

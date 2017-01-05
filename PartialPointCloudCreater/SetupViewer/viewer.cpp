@@ -1,7 +1,7 @@
 #include "viewer.hpp"
 
 GLuint shaderProgram;
-GLuint vbo,vao;
+GLuint vbo[5], vao[5];
 
 glm::mat4 global_translation_matrix;
 glm::mat4 global_rotation_matrix_x;
@@ -13,6 +13,7 @@ glm::mat4 model_scaling_matrix;
 glm::mat4 model_translation_matrix;
 glm::mat4 model_rotation_matrix_x;
 glm::mat4 model_rotation_matrix_y;
+glm::mat4 model_rotation_matrix_y1;
 glm::mat4 model_rotation_matrix_z;
 glm::mat4 model_rotation_matrix;
 
@@ -36,15 +37,15 @@ void renderGL(void);
 //-----------------------------------------------------------------
 
 //loads the pts point cloud file
-void load_obj(std::string model, std::vector<glm::vec4> &model_positions, std::vector<glm::vec4> &model_colors)
+void load_obj(std::string model)
 {
 	char * name=&model[0];
 	std::ifstream file_obj;
 	file_obj.open(name);
 	if(file_obj.is_open())
 	{
-		model_positions.clear();
-		model_colors.clear();
+		model_positions[0].clear();
+		model_colors[0].clear();
 		v_triangle_positions.clear();
 		v_triangle_colors.clear();
 		char type;
@@ -70,12 +71,12 @@ void load_obj(std::string model, std::vector<glm::vec4> &model_positions, std::v
 			else if(type == 'f')
 			{
 				file_obj>>inpi_x>>inpi_y>>inpi_z;
-				model_positions.push_back(v_triangle_positions[inpi_x-1]);
-				model_positions.push_back(v_triangle_positions[inpi_y-1]);
-				model_positions.push_back(v_triangle_positions[inpi_z-1]);
-				model_colors.push_back(v_triangle_colors[inpi_x-1]);
-				model_colors.push_back(v_triangle_colors[inpi_y-1]);
-				model_colors.push_back(v_triangle_colors[inpi_z-1]);
+				model_positions[0].push_back(v_triangle_positions[inpi_x-1]);
+				model_positions[0].push_back(v_triangle_positions[inpi_y-1]);
+				model_positions[0].push_back(v_triangle_positions[inpi_z-1]);
+				model_colors[0].push_back(v_triangle_colors[inpi_x-1]);
+				model_colors[0].push_back(v_triangle_colors[inpi_y-1]);
+				model_colors[0].push_back(v_triangle_colors[inpi_z-1]);
 			}
 			
 		}
@@ -87,6 +88,103 @@ void load_obj(std::string model, std::vector<glm::vec4> &model_positions, std::v
 	}
 } // load closed
 
+//loads the pts point cloud file
+void load_cam()
+{
+	for (int i = 0; i < num_cams; ++i)
+	{
+		model_positions[i+1].clear();
+		model_colors[i+1].clear();
+		v_triangle_positions.clear();
+		v_triangle_colors.clear();
+		char type;
+		float inp_x,inp_y,inp_z,inp_r,inp_g,inp_b;
+		int inpi_x,inpi_y,inpi_z;
+		glm::vec4 inp_pos,inp_color;
+		inp_pos[0] = cameras[i].eye[0];		//eye
+		inp_pos[1] = cameras[i].eye[1];
+		inp_pos[2] = cameras[i].eye[2];
+		inp_pos[3] = 1.0f;
+		inp_color[0] = 1;
+		inp_color[1] = 0;
+		inp_color[2] = 0;
+		inp_color[3] = 1.0f;
+		v_triangle_positions.push_back(inp_pos);
+		v_triangle_colors.push_back(inp_color);
+
+		inp_pos[0] = cameras[i].eye[0]+0.02;		//eye + up-right
+		inp_pos[1] = cameras[i].eye[1]+0.02;
+		inp_pos[2] = cameras[i].eye[2]-0.02;
+		inp_pos[3] = 1.0f;
+		inp_color[0] = 1;
+		inp_color[1] = 0;
+		inp_color[2] = 0;
+		inp_color[3] = 1.0f;
+		v_triangle_positions.push_back(inp_pos);
+		v_triangle_colors.push_back(inp_color);
+
+		inp_pos[0] = cameras[i].eye[0]+0.02;		//eye + down-right
+		inp_pos[1] = cameras[i].eye[1]-0.02;
+		inp_pos[2] = cameras[i].eye[2]-0.02;
+		inp_pos[3] = 1.0f;
+		inp_color[0] = 1;
+		inp_color[1] = 0;
+		inp_color[2] = 0;
+		inp_color[3] = 1.0f;
+		v_triangle_positions.push_back(inp_pos);
+		v_triangle_colors.push_back(inp_color);
+
+		inp_pos[0] = cameras[i].eye[0]-0.02;		//eye + up-left
+		inp_pos[1] = cameras[i].eye[1]+0.02;
+		inp_pos[2] = cameras[i].eye[2]-0.02;
+		inp_pos[3] = 1.0f;
+		inp_color[0] = 1;
+		inp_color[1] = 0;
+		inp_color[2] = 0;
+		inp_color[3] = 1.0f;
+		v_triangle_positions.push_back(inp_pos);
+		v_triangle_colors.push_back(inp_color);
+
+		inp_pos[0] = cameras[i].eye[0]-0.02;		//eye + down-left
+		inp_pos[1] = cameras[i].eye[1]-0.02;
+		inp_pos[2] = cameras[i].eye[2]-0.02;
+		inp_pos[3] = 1.0f;
+		inp_color[0] = 1;
+		inp_color[1] = 0;
+		inp_color[2] = 0;
+		inp_color[3] = 1.0f;
+		v_triangle_positions.push_back(inp_pos);
+		v_triangle_colors.push_back(inp_color);
+
+		model_positions[i+1].push_back(v_triangle_positions[0]);
+		model_positions[i+1].push_back(v_triangle_positions[1]);
+		model_positions[i+1].push_back(v_triangle_positions[2]);
+		model_colors[i+1].push_back(v_triangle_colors[0]);
+		model_colors[i+1].push_back(v_triangle_colors[1]);
+		model_colors[i+1].push_back(v_triangle_colors[2]);
+
+		model_positions[i+1].push_back(v_triangle_positions[0]);
+		model_positions[i+1].push_back(v_triangle_positions[2]);
+		model_positions[i+1].push_back(v_triangle_positions[3]);
+		model_colors[i+1].push_back(v_triangle_colors[0]);
+		model_colors[i+1].push_back(v_triangle_colors[2]);
+		model_colors[i+1].push_back(v_triangle_colors[3]);
+
+		model_positions[i+1].push_back(v_triangle_positions[0]);
+		model_positions[i+1].push_back(v_triangle_positions[3]);
+		model_positions[i+1].push_back(v_triangle_positions[4]);
+		model_colors[i+1].push_back(v_triangle_colors[0]);
+		model_colors[i+1].push_back(v_triangle_colors[3]);
+		model_colors[i+1].push_back(v_triangle_colors[4]);
+
+		model_positions[i+1].push_back(v_triangle_positions[0]);
+		model_positions[i+1].push_back(v_triangle_positions[4]);
+		model_positions[i+1].push_back(v_triangle_positions[1]);
+		model_colors[i+1].push_back(v_triangle_colors[0]);
+		model_colors[i+1].push_back(v_triangle_colors[4]);
+		model_colors[i+1].push_back(v_triangle_colors[1]);
+	}
+} // load closed
 
 void save_file(int i)
 {
@@ -142,6 +240,26 @@ void save_all()
 	}
 }
 
+void bindObjects(int objectNo, GLuint vPosition, GLuint vColor)
+{
+    //Set 0 as the current array to be used by binding it
+  glBindVertexArray (vao[objectNo]);
+  //Set 0 as the current buffer to be used by binding it
+  glBindBuffer (GL_ARRAY_BUFFER, vbo[objectNo]);
+  //Copy the points into the current buffer
+  glBufferData (GL_ARRAY_BUFFER, sizeof(glm::vec4)*(model_positions[objectNo].size() + model_colors[objectNo].size()), NULL, GL_STATIC_DRAW);
+  glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(glm::vec4)*(model_positions[objectNo].size()), &model_positions[objectNo][0] );
+
+  glBufferSubData( GL_ARRAY_BUFFER, sizeof(glm::vec4)*(model_positions[objectNo].size()), sizeof(glm::vec4)*(model_colors[objectNo].size()), &model_colors[objectNo][0]);
+  // set up vertex array
+
+  glEnableVertexAttribArray( vPosition);
+  glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+
+  glEnableVertexAttribArray( vColor );
+  glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(glm::vec4)*(model_positions[objectNo].size())) );
+}
+
 void initBuffersGL(void)
 {
 	global_cam.eye = glm::vec3(0,0,5);
@@ -152,7 +270,8 @@ void initBuffersGL(void)
 	std::ifstream mesh_loader, camera_loader;
 	camera_loader.open("camera_positions.txt");
 	Camera c;
-	if(camera_loader.is_open()){
+	if(camera_loader.is_open())
+	{
 		camera_loader >> num_cams;
 		for (int i = 0; i < num_cams; ++i)
 		{
@@ -161,20 +280,23 @@ void initBuffersGL(void)
 			camera_loader>>c.up[0]>>c.up[1]>>c.up[2];
 			cameras.push_back(c);
 		}
+		load_cam();
 	}
-	else{
+	else
+	{
 		std::cerr<<"Could not find the file : camera_positions.txt"<<std::endl;
 	}
 
 	mesh_loader.open("mymesh.txt");
 	if(mesh_loader.is_open()){
 		mesh_loader>>model;
-		load_obj(model,model_positions,model_colors);
+		load_obj(model);
 		mesh_loader>>model_xscale>>model_yscale>>model_zscale;
 		mesh_loader>>model_xrot>>model_xrot>>model_xrot;
 		mesh_loader>>model_xtrans>>model_ytrans>>model_ztrans;
 	}
-	else {
+	else 
+	{
 		std::cout<< "could not find file myscene.scn"<<std::endl;
 	}
 
@@ -196,11 +318,11 @@ void initBuffersGL(void)
 
 
 	//Ask GL for a Vertex Attribute Object (vao)
-	glGenVertexArrays (1, &vao);
+	glGenVertexArrays (5, vao);
 	//Ask GL for a Vertex Buffer Object (vbo)
-	glGenBuffers (1, &vbo);
+	glGenBuffers (5, vbo);
 
-	//Set it as the current array to be used by binding it
+	/*//Set it as the current array to be used by binding it
 	glBindVertexArray (vao);
 	//Set it as the current buffer to be used by binding it
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
@@ -217,19 +339,23 @@ void initBuffersGL(void)
 	glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 	
 	glEnableVertexAttribArray( vColor );
-	glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(model_positions.size()*sizeof(glm::vec4)) );
+	glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(model_positions.size()*sizeof(glm::vec4)) );*/
+	bindObjects(0,vPosition,vColor);
+	bindObjects(1,vPosition,vColor);
+	bindObjects(2,vPosition,vColor);
+	bindObjects(3,vPosition,vColor);
+	bindObjects(4,vPosition,vColor);
 }
 
-void renderGL(void){
-	//model transformations
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// model matrix
+void drawObject(int objectNo)
+{
 	model_scaling_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(model_xscale,model_yscale,model_zscale));
 	model_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(model_xtrans,model_ytrans,model_ztrans));
 	model_rotation_matrix_x = glm::rotate(glm::mat4(1.0f), model_xrot, glm::vec3(1.0f,0.0f,0.0f));
 	model_rotation_matrix_y = glm::rotate(glm::mat4(1.0f), model_yrot, glm::vec3(0.0f,1.0f,0.0f));
+	model_rotation_matrix_y1 = glm::rotate(glm::mat4(1.0f), float(objectNo*90.0), glm::vec3(0.0f,1.0f,0.0f));
 	model_rotation_matrix_z = glm::rotate(glm::mat4(1.0f), model_zrot, glm::vec3(0.0f,0.0f,1.0f));
-	model_rotation_matrix = model_rotation_matrix_z * model_rotation_matrix_y * model_rotation_matrix_x;
+	model_rotation_matrix = model_rotation_matrix_z *model_rotation_matrix_y1 * model_rotation_matrix_y * model_rotation_matrix_x;
 	model_matrix = model_translation_matrix * model_rotation_matrix * model_scaling_matrix;
 
 	// global matrix
@@ -259,12 +385,18 @@ void renderGL(void){
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(final_matrix));
 	glUniform1i(state_shader,state);
 
-	glBindVertexArray (vao);
-	glDrawArrays(GL_TRIANGLES, 0, model_positions.size());
-	// glDrawArrays(GL_POINTS, 0, model_positions.size());
+	glBindVertexArray (vao[objectNo]);
+	glDrawArrays(GL_TRIANGLES, 0, model_positions[objectNo].size());
 }
-
-
+void renderGL(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	drawObject(0);
+	drawObject(1);
+	drawObject(2);
+	drawObject(3);
+	drawObject(4);
+}
 
 int main(int argc, char** argv){
 
