@@ -1,4 +1,4 @@
-scans/obj/test_scan_000.obj
+/home/kunala/Documents/BTP/SPRING_MALE/SPRING0001.obj
 1.0 1.0 1.0
 0.0 0.0 0.0
 -0.3 0.2 0.0
